@@ -5,11 +5,15 @@ import './product_item.dart';
 import '../providers/products.dart';
 
 class ProductsGrid extends StatelessWidget {
+  final bool showFavs;
+  
+  const ProductsGrid(this.showFavs);
+  
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Products>(
         context); // Allows us to set up a connection to one of the provided classes
-    final products = productsData.items;
+    final products = showFavs ? productsData.favoriteItems : productsData.items;
     // This is not a list of items, it is an object based in "Products" class, we would have an items getter
     // With this piece of info <Products> we're telling provider package that we want to establish a direct communication
     // channel to the provided instance of the "Products" class

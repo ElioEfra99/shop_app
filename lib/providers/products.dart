@@ -37,8 +37,14 @@ class Products with ChangeNotifier {
     ),
   ]; // Should never be accesed from the outside
 
+  // var _showFavoritesOnly = false;
+
   List<Product> get items {
     return [..._items]; // Returns a copy of items
+  }
+
+  List<Product> get favoriteItems {
+    return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
   void addProduct() {
@@ -49,4 +55,14 @@ class Products with ChangeNotifier {
   Product findById(String id) {
     return _items.firstWhere((prod) => prod.id == id);
   }
+
+  // void showFavoritesOnly() {
+  //   _showFavoritesOnly = true;
+  //   notifyListeners();
+  // }
+
+  // void showAll() {
+  //   _showFavoritesOnly = false;
+  //   notifyListeners();
+  // }
 }
