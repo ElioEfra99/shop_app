@@ -20,9 +20,6 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.cyan,
           accentColor: Colors.limeAccent,
           fontFamily: 'Lato',
-          textTheme: TextTheme(
-            title: null,
-          ),
         ),
         initialRoute: '/',
         routes: {

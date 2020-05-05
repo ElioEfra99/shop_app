@@ -21,7 +21,8 @@ class ProductsGrid extends StatelessWidget {
                                                               // Because widgets are recycled and only data changes
         // Here the builder or create approach would allow errors to occur
         // ChangeNotifierProvider automatically cleans up data not used when you change screens
-        value: Products(),
+        value: products[i],  // Get the product retrieved up there
+        // Create a new provider from one product gathered
         child: ProductItem(
             // products[i].id,
             // products[i].title,
