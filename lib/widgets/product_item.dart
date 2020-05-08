@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
 import '../screens/product_detail_screen.dart';
+import '../providers/cart.dart';
 
 class ProductItem extends StatelessWidget {
   // final String id;
@@ -15,7 +16,8 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
-    // product would re-build the whole widget but consumer only re-builds the part where it is called
+    // product would re-build the whole widget but consumer only re-builds the part where it is called.
+    final cart = Provider.of<Cart>(context, listen: false);  // We just want to notify the cart that we added an item, not update it.
     print('build executed');
     return ClipRRect(
       // Clip rounded rectange (adds rounded corners)
@@ -74,7 +76,9 @@ class ProductItem extends StatelessWidget {
             // Last element (right)
             icon: Icon(Icons.shopping_cart),
             color: Theme.of(context).accentColor,
-            onPressed: () {},
+            onPressed: () {
+              cart.addItems(product.id, product.price, product.title);
+            },
           ),
         ),
       ),
