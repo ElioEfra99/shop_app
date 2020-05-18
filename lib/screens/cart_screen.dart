@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/cart.dart';
+import '../providers/cart.dart' show Cart;
+import '../widgets/cart_item.dart';
+import '../providers/orders.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
@@ -20,37 +22,55 @@ class CartScreen extends StatelessWidget {
           Card(
             margin: EdgeInsets.all(15),
             child: Padding(
-                padding: EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      'Total',
+              padding: EdgeInsets.all(8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    'Total',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                  Spacer(), // Takes up all the available space and reserves it for itself, in other words, the "Text" gets greedy
+                  Chip(
+                    label: Text(
+                      '\$${cart.totalAmount.toStringAsFixed(2)}',
                       style: TextStyle(
-                        fontSize: 20,
+                        color:
+                            Theme.of(context).primaryTextTheme.headline6.color,
                       ),
                     ),
-                    Spacer(), // Takes up all the available space and reserves it for itself, in other words, the "Text" gets greedy 
-                    Chip(
-                      label: Text(
-                        '\$${cart.totalAmount}',
-                        style: TextStyle(
-                          color: Theme.of(context)
-                              .primaryTextTheme
-                              .headline6
-                              .color,
-                        ),
-                      ),
-                      backgroundColor: Theme.of(context).primaryColor,
-                    ),
-                    FlatButton(
-                      child: Text('ORDER NOW'),
-                      onPressed: () {},
-                      textColor: Theme.of(context).primaryColor,
-                    )
-                  ],
-                )),
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                  FlatButton(
+                    child: Text('ORDER NOW'),
+                    onPressed: () {
+                      final orders =
+                          Provider.of<Orders>(context, listen: false).addOrder(
+                        cart.items.values.toList(),
+                        cart.totalAmount,
+                      );
+                      cart.clear();
+                    },
+                    textColor: Theme.of(context).primaryColor,
+                  )
+                ],
+              ),
+            ),
           ),
+          Expanded(
+            child: ListView.builder(
+              itemBuilder: (ctx, i) => CartItem(
+                id: cart.items.values.toList()[i].id,
+                productId: cart.items.keys.toList()[i],
+                price: cart.items.values.toList()[i].price,
+                quantity: cart.items.values.toList()[i].quantity,
+                title: cart.items.values.toList()[i].title,
+              ),
+              itemCount: cart.items.length,
+            ),
+          )
         ],
       ),
     );
