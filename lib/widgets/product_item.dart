@@ -17,7 +17,9 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     // product would re-build the whole widget but consumer only re-builds the part where it is called.
-    final cart = Provider.of<Cart>(context, listen: false);  // We just want to notify the cart that we added an item, not update it.
+    final cart = Provider.of<Cart>(context,
+        listen:
+            false); // We just want to notify the cart that we added an item, not update it.
     print('build executed');
     return ClipRRect(
       // Clip rounded rectange (adds rounded corners)
@@ -78,6 +80,17 @@ class ProductItem extends StatelessWidget {
             color: Theme.of(context).accentColor,
             onPressed: () {
               cart.addItems(product.id, product.price, product.title);
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text('Added item to cart!'),
+                duration: Duration(seconds: 2),
+                action: SnackBarAction(
+                  label: 'UNDO',
+                  onPressed: () {
+                    cart.removeItem(product.id);
+                  },
+                ),
+              )); // Here, we establish a connection with the nearest Scaffold Widget
             },
           ),
         ),
