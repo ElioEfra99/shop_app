@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../providers/product.dart';
+
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product';
   EditProductScreen({Key key}) : super(key: key);
@@ -13,6 +15,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _descriptionFocusNode = FocusNode();
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
+  final GlobalKey<FormState> _form = GlobalKey();
+  var _editedProduct = Product(
+    description: '',
+    id: null,
+    imageUrl: '',
+    price: 0,
+    title: '',
+  );
 
   @override
   void initState() {
@@ -35,8 +45,26 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _updateImageUrl() {
     if (!_imageUrlFocusNode.hasFocus) {
+      // Making sure not to show a preview if url is invalid.
+      if ((!_imageUrlController.text.startsWith('http') &&
+          !_imageUrlController.text.startsWith(
+              'https')) /*(!_imageUrlController.text.endsWith('.png') && !value.endsWith('.jpg') && !value.endsWith('.jpeg'))*/) {
+        return;
+      }
       setState(() {});
     }
+  }
+
+  void _saveForm() {
+    final isValid = _form.currentState.validate();
+    if (!isValid) {
+      return;
+    }
+    _form.currentState.save();
+    print(_editedProduct.title);
+    print(_editedProduct.description);
+    print(_editedProduct.price);
+    print(_editedProduct.imageUrl);
   }
 
   @override
@@ -44,10 +72,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Product'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: _saveForm,
+          )
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Form(
+          key: _form,
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
@@ -58,6 +93,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_priceFocusNode);
                   },
+                  onSaved: (value) {
+                    _editedProduct = Product(
+                      id: null,
+                      title: value,
+                      description: _editedProduct.description,
+                      price: _editedProduct.price,
+                      imageUrl: _editedProduct.imageUrl,
+                    );
+                  },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please, provide a Title.';
+                    }
+                    return null;
+                  },
                 ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Price'),
@@ -67,12 +117,51 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_descriptionFocusNode);
                   },
+                  onSaved: (value) {
+                    _editedProduct = Product(
+                      id: null,
+                      title: _editedProduct.title,
+                      description: _editedProduct.description,
+                      price: double.parse(value),
+                      imageUrl: _editedProduct.imageUrl,
+                    );
+                  },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please, provide a price.';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Please, provide a valid number';
+                    }
+                    if (double.parse(value) <= 0) {
+                      return 'Must provide a positive number or higher than 0.';
+                    }
+                    return null;
+                  },
                 ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Description'),
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
                   focusNode: _descriptionFocusNode,
+                  onSaved: (value) {
+                    _editedProduct = Product(
+                      id: null,
+                      title: _editedProduct.title,
+                      description: value,
+                      price: _editedProduct.price,
+                      imageUrl: _editedProduct.imageUrl,
+                    );
+                  },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please, provide a description.';
+                    }
+                    if (value.length < 10) {
+                      return 'Should be at least 10 characters long';
+                    }
+                    return null;
+                  },
                 ),
                 Row(
                   // Row has unconstrained width, takes TextFormField boundaries, TextFormField takes infinite width
@@ -99,6 +188,43 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         textInputAction: TextInputAction.done,
                         controller: _imageUrlController,
                         focusNode: _imageUrlFocusNode,
+                        onFieldSubmitted: (_) {
+                          _saveForm();
+                        },
+                        onSaved: (value) {
+                          _editedProduct = Product(
+                            id: null,
+                            title: _editedProduct.title,
+                            description: _editedProduct.description,
+                            price: _editedProduct.price,
+                            imageUrl: value,
+                          );
+                        },
+                        validator: (value) {
+                          const regExWithHttpProtocol =
+                              'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)';
+                          const regExWithoutHttpProtocol =
+                              '[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)';
+                          if (value.isEmpty) {
+                            return 'Please provide an image URL.';
+                          }
+                          if (!value.startsWith('http') &&
+                              !value.startsWith('https')) {
+                            // Si no inicia con http ni con https, entra a la condición, me manda error.
+                            return 'Invalid URL, Please enter a valid one';
+                          }
+                          // if(!value.endsWith('.png') && !value.endsWith('.jpg') && !value.endsWith('.jpeg')) {
+                          //   return 'URL does not contain a valid image';
+                          // }
+
+                          // if (!value.contains(
+                          //         new RegExp(regExWithHttpProtocol)) &&
+                          //     !value.contains(
+                          //         new RegExp(regExWithoutHttpProtocol))) {
+                          //   return 'Invalid URL, Please enter a valid one';
+                          // }
+                          return null;
+                        },
                       ),
                     ),
                   ],

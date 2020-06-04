@@ -53,8 +53,8 @@ class ProductItem extends StatelessWidget {
           backgroundColor: Colors.black87,
           leading: Consumer<Product>(
             // Only run this subpart again
-            // Also could have achieved this same behavior by wrapping IconButton bellow inside a widget and put the provider right there
-            // since we would only care about the receiving data in only that widget
+            // Also could have achieved this same behavior by wrapping IconButton bellow inside a widget and put the 
+            // provider right there since we would only care about the receiving data in only that widget
             builder: (ctx, product, _) => IconButton(
               // _ means I don't need a child
               // builder: (ctx, product, child) => IconButton(
@@ -90,6 +90,7 @@ class ProductItem extends StatelessWidget {
                     cart.removeItem(product.id);
                   },
                 ),
+                backgroundColor: Colors.teal,
               )); // Here, we establish a connection with the nearest Scaffold Widget
             },
           ),
