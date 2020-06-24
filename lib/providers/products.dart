@@ -53,21 +53,23 @@ class Products with ChangeNotifier {
 
   // Which kind of data that Future will resolve to once it's done
   // we actually don't care, that's why we're resolving to void.
-  Future<void> addProduct(Product product) {
+  Future<void> addProduct(Product product) async {
     const url = 'https://flutter-shop-app-65772.firebaseio.com/products.json';
     // http will return a future
-    return http
-        .post(
-      url,
-      body: json.encode({
-        'title': product.title,
-        'description': product.description,
-        'price': product.price,
-        'imageUrl': product.imageUrl,
-        'isFavorite': product.isFavorite,
-      }),
-    )
-        .then((response) {
+    try {
+      final response =
+          await http // await tells dart that we want to wait for this operation to finish, before we
+              // move to our next line in code
+              .post(
+        url,
+        body: json.encode({
+          'title': product.title,
+          'description': product.description,
+          'price': product.price,
+          'imageUrl': product.imageUrl,
+          'isFavorite': product.isFavorite,
+        }),
+      );
       print(json.decode(response.body));
       final newProduct = Product(
         title: product.title,
@@ -80,14 +82,15 @@ class Products with ChangeNotifier {
       _items.add(newProduct);
       // _items.insert(0, newProduct); // at the start of the list
       notifyListeners();
-
-      // return Future.value();
-      // This returns a Future which resolves to nothing
-      // This wouldn't work
-    }).catchError((error){
+    } catch (error) {
       print(error);
       throw error;
-    });
+    }
+
+    // return Future.value();
+    // This returns a Future which resolves to nothing
+    // This wouldn't work
+
     // return Future.value();
     // This wouldn't work either, because you wouldn't wait for the .then() to execute
   }
