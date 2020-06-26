@@ -9,9 +9,16 @@ import '../widgets/user_product_item.dart';
 class UserProductScreen extends StatelessWidget {
   static const routeName = '/user-products';
 
+  Future<void> _refreshProducts(BuildContext context) async {
+    // We give a context because we don't have one at this point
+    await Provider.of<Products>(context, listen: false).fetchAndSetData();
+    // We simply await for this to finish, and the overall method will only be done once this is done.
+  }
+
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Products>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Products'),
@@ -25,19 +32,23 @@ class UserProductScreen extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
-      body: Padding(
-        padding: EdgeInsets.all(8),
-        child: ListView.builder(
-          itemCount: productsData.items.length,
-          itemBuilder: (_, i) => Column(
-            children: [
-              UserProductItem(
-                productsData.items[i].title,
-                productsData.items[i].imageUrl,
-                productsData.items[i].id,
-              ),
-              Divider(),
-            ],
+      body: RefreshIndicator(
+        backgroundColor: Colors.black,
+        onRefresh: () => _refreshProducts(context),
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: ListView.builder(
+            itemCount: productsData.items.length,
+            itemBuilder: (_, i) => Column(
+              children: [
+                UserProductItem(
+                  productsData.items[i].title,
+                  productsData.items[i].imageUrl,
+                  productsData.items[i].id,
+                ),
+                Divider(),
+              ],
+            ),
           ),
         ),
       ),
