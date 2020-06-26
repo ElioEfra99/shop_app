@@ -51,6 +51,17 @@ class Products with ChangeNotifier {
     return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
+  Future<void> fetchData() async {
+    const url = 'https://flutter-shop-app-65772.firebaseio.com/products.json';
+
+    try {
+      final response = await http.get(url);
+      print(json.decode(response.body));
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // Which kind of data that Future will resolve to once it's done
   // we actually don't care, that's why we're resolving to void.
   Future<void> addProduct(Product product) async {
