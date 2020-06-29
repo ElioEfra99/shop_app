@@ -72,6 +72,25 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.dispose();
   }
 
+  Future<void> errorDialog() {
+    return showDialog<Null>(
+      // Await for this result, before we continue to finally, because it returns a future
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('An error occurred'),
+        content: Text('Something went wrong :('),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
+
   void _updateImageUrl() {
     if (!_imageUrlFocusNode.hasFocus) {
       // Making sure not to show a preview if url is invalid.
@@ -97,33 +116,23 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
 
     if (_editedProduct.id != null) {
-      Provider.of<Products>(context, listen: false)
-          .updateProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop();
+      try {
+        await Provider.of<Products>(context, listen: false)
+            .updateProduct(_editedProduct.id, _editedProduct);
+      } catch (error) {
+        await errorDialog();
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
+      }
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
             .addProduct(_editedProduct);
       } catch (error) {
-        await showDialog<Null>(
-          // Await for this result, before we continue to finally, because it returns a future
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('An error occurred'),
-            content: Text('Something went wrong :('),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              )
-            ],
-          ),
-        );
+        await errorDialog();
       } finally {
         // Code which runs, no matter if we succeeded or if we failed.
         setState(() {
