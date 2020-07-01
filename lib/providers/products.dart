@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import './product.dart';
+import '../models/http_exception.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -145,7 +146,27 @@ class Products with ChangeNotifier {
   }
 
   void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
+    // Using the optimistic pattern, where we roll back if our product deletion fails
+    final url = 'https://flutter-shop-app-65772.firebaseio.com/products/$id';
+
+    final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+    var existingProduct = _items[existingProductIndex];
+
+    // POST and GET throws error, DELETE does not do that, we end up in the 'then' block
+    http.delete(url).then((response) {
+      if (response.statusCode >= 400) {
+        throw HttpException('Could not delete product.');
+      }
+      print(response.statusCode);
+      existingProduct = null;
+      // We clear up this reference and let Dart remove that object in memory since no one needs it anymore
+    }).catchError((_) {
+      print('Didn\'t reach'); // This wouldn't be reached
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+    });
+
+    _items.removeAt(existingProductIndex);
     notifyListeners();
   }
 
