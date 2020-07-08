@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
+import '../providers/products.dart';
 import '../screens/product_detail_screen.dart';
 import '../providers/cart.dart';
 
@@ -15,6 +16,7 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaffold = Scaffold.of(context);
     final product = Provider.of<Product>(context, listen: false);
     // product would re-build the whole widget but consumer only re-builds the part where it is called.
     final cart = Provider.of<Cart>(context,
@@ -53,14 +55,20 @@ class ProductItem extends StatelessWidget {
           backgroundColor: Colors.black87,
           leading: Consumer<Product>(
             // Only run this subpart again
-            // Also could have achieved this same behavior by wrapping IconButton bellow inside a widget and put the 
+            // Also could have achieved this same behavior by wrapping IconButton bellow inside a widget and put the
             // provider right there since we would only care about the receiving data in only that widget
             builder: (ctx, product, _) => IconButton(
               // _ means I don't need a child
               // builder: (ctx, product, child) => IconButton(
               // First element (left)
-              onPressed: () {
-                product.toggleFavorite();
+              onPressed: () async {
+                try {
+                  await product.toggleFavorite();
+                } catch (error) {
+                  scaffold.showSnackBar(
+                    SnackBar(content: Text('Fav / Unfav failed! 🐣')),
+                  );
+                }
               },
               // lavel: child // This child references the child in the builder method, it would use Text('Hello')
               icon: Icon(
