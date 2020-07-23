@@ -19,7 +19,7 @@ class Products with ChangeNotifier {
     return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
-  Future<List<Product>> fetchAndSetData() async {
+  Future<void> fetchAndSetProducts() async {
     const url = 'https://flutter-shop-app-65772.firebaseio.com/products.json';
 
     try {
@@ -27,15 +27,21 @@ class Products with ChangeNotifier {
       final List<Product> loadedData = [];
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
 
+      if (extractedData == null) {
+        return;
+      }
+
       extractedData.forEach((prodId, prodValue) {
-        loadedData.add(Product(
-          id: prodId,
-          title: prodValue['title'],
-          description: prodValue['description'],
-          imageUrl: prodValue['imageUrl'],
-          price: prodValue['price'],
-          isFavorite: prodValue['isFavorite'],
-        ));
+        loadedData.add(
+          Product(
+            id: prodId,
+            title: prodValue['title'],
+            description: prodValue['description'],
+            imageUrl: prodValue['imageUrl'],
+            price: prodValue['price'],
+            isFavorite: prodValue['isFavorite'],
+          ),
+        );
       });
 
       _items = loadedData;
@@ -56,15 +62,19 @@ class Products with ChangeNotifier {
               // move to our next line in code
               .post(
         url,
-        body: json.encode({
-          'title': product.title,
-          'description': product.description,
-          'price': product.price,
-          'imageUrl': product.imageUrl,
-          'isFavorite': product.isFavorite,
-        }),
+        body: json.encode(
+          {
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+            'isFavorite': product.isFavorite,
+          },
+        ),
       );
+
       print(json.decode(response.body));
+
       final newProduct = Product(
         title: product.title,
         description: product.description,
@@ -72,6 +82,7 @@ class Products with ChangeNotifier {
         price: product.price,
         id: json.decode(response.body)['name'],
       );
+
       print(newProduct.id);
       _items.add(newProduct);
       // _items.insert(0, newProduct); // at the start of the list
@@ -100,13 +111,17 @@ class Products with ChangeNotifier {
       final url =
           'https://flutter-shop-app-65772.firebaseio.com/products/$id.json';
 
-      await http.patch(url,
-          body: json.encode({
+      await http.patch(
+        url,
+        body: json.encode(
+          {
             'title': newProduct.title,
             'description': newProduct.description,
             'price': newProduct.price,
             'imageUrl': newProduct.imageUrl,
-          }));
+          },
+        ),
+      );
       _items[prodIndex] = newProduct;
       notifyListeners();
     } else {

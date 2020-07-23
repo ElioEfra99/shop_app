@@ -44,7 +44,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       setState(() {
         _isLoading = true;
       });
-      Provider.of<Products>(context).fetchAndSetData().then((_) {
+      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
         setState(() {
           _isLoading = false;
         });
@@ -107,7 +107,6 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(
-                backgroundColor: Colors.black,
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                 strokeWidth: 5,
               ),

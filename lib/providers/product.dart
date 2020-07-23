@@ -28,7 +28,8 @@ class Product extends ChangeNotifier {
   }
 
   Future<void> toggleFavorite() async {
-    final url = 'https://flutter-shop-app-65772.firebaseio.com/products/$id.json';
+    final url =
+        'https://flutter-shop-app-65772.firebaseio.com/products/$id.json';
 
     var oldStatus = isFavorite;
 
@@ -36,10 +37,14 @@ class Product extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await http.patch(url,
-          body: json.encode({
+      final response = await http.patch(
+        url,
+        body: json.encode(
+          {
             'isFavorite': isFavorite,
-          }));
+          },
+        ),
+      );
 
       if (response.statusCode >= 400) {
         _setFavValue(oldStatus);

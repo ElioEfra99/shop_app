@@ -11,7 +11,7 @@ class UserProductScreen extends StatelessWidget {
 
   Future<void> _refreshProducts(BuildContext context) async {
     // We give a context because we don't have one at this point
-    await Provider.of<Products>(context, listen: false).fetchAndSetData();
+    await Provider.of<Products>(context, listen: false).fetchAndSetProducts();
     // We simply await for this to finish, and the overall method will only be done once this is done.
   }
 
