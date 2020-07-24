@@ -33,7 +33,7 @@ class UserProductScreen extends StatelessWidget {
       ),
       drawer: AppDrawer(),
       body: RefreshIndicator(
-        backgroundColor: Colors.black,
+        color: Theme.of(context).primaryColor,
         onRefresh: () => _refreshProducts(context),
         child: Padding(
           padding: EdgeInsets.all(8),

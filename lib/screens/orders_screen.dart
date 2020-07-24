@@ -6,52 +6,50 @@ import '../widgets/app_drawer.dart';
 import '../providers/orders.dart' show Orders;
 import '../widgets/order_item.dart';
 
-class OrdersScreen extends StatefulWidget {
+class OrdersScreen extends StatelessWidget {
   static const routeName = '/orders';
 
-  const OrdersScreen({Key key}) : super(key: key);
-
-  @override
-  _OrdersScreenState createState() => _OrdersScreenState();
-}
-
-class _OrdersScreenState extends State<OrdersScreen> {
-  var _isLoading = false;
-
-  @override
-  void initState() {
-    // Shouldn't use 'async' keyword, as this doesn't return a Future, use 'then()' instead
-    // Merhod 2 of 2 to initialize, instead of using didChangeDependencies
-    Future.delayed(Duration.zero).then((_) async {
-      setState(() {
-        _isLoading = true;
-      });
-      await Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
-      setState(() {
-        _isLoading = false;
-      });
-    });
-    super.initState();
+  Future<void> _refreshProducts(BuildContext context) async {
+    // We give a context because we don't have one at this point
+    await Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
+    // We simply await for this to finish, and the overall method will only be done once this is done.
   }
 
   @override
   Widget build(BuildContext context) {
-    final orderData = Provider.of<Orders>(context);
+    print('Building orders');
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Orders'),
       ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                strokeWidth: 5,
-              ),
-            )
-          : ListView.builder(
-              itemBuilder: (ctx, i) => OrderItem(orderData.orders[i]),
-              itemCount: orderData.orders.length,
-            ),
+      body: RefreshIndicator(
+        color: Theme.of(context).primaryColor,
+        onRefresh: () => _refreshProducts(context),
+        child: FutureBuilder(
+          future:
+              Provider.of<Orders>(context, listen: false).fetchAndSetOrders(),
+          builder: (ctx, dataSnapshot) {
+            if (dataSnapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                  strokeWidth: 5,
+                ),
+              );
+            } else if (dataSnapshot.error != null) {
+              // ...
+              // Do error handling stuff
+            } else {
+              return Consumer<Orders>(
+                builder: (ctx, orderData, _) => ListView.builder(
+                  itemBuilder: (ctx, i) => OrderItem(orderData.orders[i]),
+                  itemCount: orderData.orders.length,
+                ),
+              );
+            }
+          },
+        ),
+      ),
       drawer: AppDrawer(),
     );
   }

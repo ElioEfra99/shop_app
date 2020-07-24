@@ -85,6 +85,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
             onPressed: () {
               Navigator.of(ctx).pop();
             },
+          ),
+          FlatButton(
+            child: Text('The hell?'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
           )
         ],
       ),
