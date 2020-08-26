@@ -2,8 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/http_exception.dart';
 
+import '../screens/products_overview_screen.dart';
+import '../models/http_exception.dart';
 import '../providers/auth.dart';
 
 enum AuthMode { Signup, Login }
@@ -158,6 +159,9 @@ class _AuthCardState extends State<AuthCard> {
       }
 
       _showErrorDialog(errorMessage);
+
+      Navigator.of(context)
+          .pushReplacementNamed(ProductsOverviewScreen.routeName);
     } catch (error) {
       // Catches generic errors
       const errorMessage =
