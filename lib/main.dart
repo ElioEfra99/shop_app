@@ -30,11 +30,15 @@ class MyApp extends StatelessWidget {
               previousProducts == null ? [] : previousProducts.items),
           // This Products provider will be rebuilt when Auth changes
         ),
-        ChangeNotifierProvider(
-          create: (ctx) => Cart(),
+        ChangeNotifierProxyProvider<Auth, Cart>(
+          create: (ctx) => Cart(null, {}),
+          update: (ctx, auth, previousCart) =>
+              Cart(auth.token, previousCart == null ? {} : previousCart.items),
         ),
-        ChangeNotifierProvider(
-          create: (ctx) => Orders(),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (ctx) => Orders(null, []),
+          update: (ctx, auth, previousOrders) => Orders(
+              auth.token, previousOrders == null ? [] : previousOrders.orders),
         ),
         // MaterialApp and all its children are interested in listening data changes
       ],

@@ -59,7 +59,8 @@ class Products with ChangeNotifier {
   // Which kind of data that Future will resolve to once it's done
   // we actually don't care, that's why we're resolving to void.
   Future<void> addProduct(Product product) async {
-    const url = 'https://flutter-shop-app-65772.firebaseio.com/products.json';
+    final url =
+        'https://flutter-shop-app-65772.firebaseio.com/products.json?auth=$authToken';
     // http will return a future
     try {
       final response =
@@ -114,7 +115,7 @@ class Products with ChangeNotifier {
 
     if (prodIndex >= 0) {
       final url =
-          'https://flutter-shop-app-65772.firebaseio.com/products/$id.json';
+          'https://flutter-shop-app-65772.firebaseio.com/products/$id.json?auth=$authToken';
 
       await http.patch(
         url,
@@ -137,7 +138,7 @@ class Products with ChangeNotifier {
   void deleteProduct(String id) async {
     // Using the optimistic pattern, where we roll back if our product deletion fails
     final url =
-        'https://flutter-shop-app-65772.firebaseio.com/products/$id.json';
+        'https://flutter-shop-app-65772.firebaseio.com/products/$id.json?auth=$authToken';
 
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[existingProductIndex];

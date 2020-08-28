@@ -27,9 +27,9 @@ class Product extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleFavorite() async {
+  Future<void> toggleFavorite(String authToken) async {
     final url =
-        'https://flutter-shop-app-65772.firebaseio.com/products/$id.json';
+        'https://flutter-shop-app-65772.firebaseio.com/products/$id.json?auth=$authToken';
 
     var oldStatus = isFavorite;
 

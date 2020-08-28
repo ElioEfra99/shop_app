@@ -2,18 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
-import '../providers/products.dart';
+import '../providers/auth.dart';
 import '../screens/product_detail_screen.dart';
 import '../providers/cart.dart';
 
 class ProductItem extends StatelessWidget {
-  // final String id;
-  // final String title;
-  // final String imageUrl;
-  // final double price;
-
-  // ProductItem(this.id, this.title, this.imageUrl, this.price);
-
   @override
   Widget build(BuildContext context) {
     final scaffold = Scaffold.of(context);
@@ -22,7 +15,10 @@ class ProductItem extends StatelessWidget {
     final cart = Provider.of<Cart>(context,
         listen:
             false); // We just want to notify the cart that we added an item, not update it.
+    final auth = Provider.of<Auth>(context, listen: false);
+
     print('build executed');
+
     return ClipRRect(
       // Clip rounded rectange (adds rounded corners)
       borderRadius: BorderRadius.circular(10),
@@ -63,7 +59,7 @@ class ProductItem extends StatelessWidget {
               // First element (left)
               onPressed: () async {
                 try {
-                  await product.toggleFavorite();
+                  await product.toggleFavorite(auth.token);
                 } catch (error) {
                   scaffold.showSnackBar(
                     SnackBar(content: Text('Fav / Unfav failed! 🐣')),

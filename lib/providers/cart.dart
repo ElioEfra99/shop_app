@@ -19,7 +19,10 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
+  final String authToken;
   Map<String, CartItem> _items = {};
+
+  Cart(this.authToken, this._items);
 
   Map<String, CartItem> get items {
     return {..._items};
@@ -40,13 +43,14 @@ class Cart with ChangeNotifier {
   void addItems(String productId, double price, String title) {
     if (_items.containsKey(productId)) {
       _items.update(
-          productId,
-          (existingCartItem) => CartItem(
-                id: existingCartItem.id,
-                price: existingCartItem.price,
-                title: existingCartItem.title,
-                quantity: existingCartItem.quantity + 1,
-              ));
+        productId,
+        (existingCartItem) => CartItem(
+          id: existingCartItem.id,
+          price: existingCartItem.price,
+          title: existingCartItem.title,
+          quantity: existingCartItem.quantity + 1,
+        ),
+      );
     } else {
       _items.putIfAbsent(
           productId,
