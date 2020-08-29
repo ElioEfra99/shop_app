@@ -7,9 +7,10 @@ import './product.dart';
 import '../models/http_exception.dart';
 
 class Products with ChangeNotifier {
-  Products(this.authToken, this._items);
-
   final String authToken;
+  final String userId;
+
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> _items = []; // Should never be accesed from the outside
 
@@ -24,17 +25,27 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    final url =
-        'https://flutter-shop-app-65772.firebaseio.com/products.json?auth=$authToken';
-
     try {
-      final response = await http.get(url);
+      var url =
+          'https://flutter-shop-app-65772.firebaseio.com/products.json?auth=$authToken';
       final List<Product> loadedData = [];
+
+      final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+
+      print(extractedData);
 
       if (extractedData == null) {
         return;
       }
+
+      url =
+          'https://flutter-shop-app-65772.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
+
+      print(favoriteData);
 
       extractedData.forEach((prodId, prodValue) {
         loadedData.add(
@@ -44,7 +55,11 @@ class Products with ChangeNotifier {
             description: prodValue['description'],
             imageUrl: prodValue['imageUrl'],
             price: prodValue['price'],
-            isFavorite: prodValue['isFavorite'],
+            isFavorite:
+                favoriteData == null ? false : favoriteData[prodId] ?? false,
+            // favoriteData could not exist
+            // because of an user having not favorited an item before
+            // that's why we use the ?? operator, in case we have null
           ),
         );
       });
@@ -74,7 +89,6 @@ class Products with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
-            'isFavorite': product.isFavorite,
           },
         ),
       );
@@ -89,12 +103,9 @@ class Products with ChangeNotifier {
         id: json.decode(response.body)['name'],
       );
 
-      print(newProduct.id);
       _items.add(newProduct);
-      // _items.insert(0, newProduct); // at the start of the list
       notifyListeners();
     } catch (error) {
-      print(error);
       throw error;
     }
 

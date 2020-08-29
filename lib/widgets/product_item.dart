@@ -59,7 +59,7 @@ class ProductItem extends StatelessWidget {
               // First element (left)
               onPressed: () async {
                 try {
-                  await product.toggleFavorite(auth.token);
+                  await product.toggleFavorite(auth.token, auth.userId);
                 } catch (error) {
                   scaffold.showSnackBar(
                     SnackBar(content: Text('Fav / Unfav failed! 🐣')),

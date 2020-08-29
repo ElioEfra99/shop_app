@@ -21,6 +21,10 @@ class Auth with ChangeNotifier {
     return null;
   }
 
+  String get userId {
+    return _userId;
+  }
+
   // Trying to put clean code teachings in practice :D
   bool _expiryDateAndTokenAreValid() {
     if (_expiryDate != null &&

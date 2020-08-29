@@ -25,9 +25,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<Auth, Products>(
           // Looks for previous Providers and then assigns it to the 'auth' dynamic value
-          create: (ctx) => Products(null, []),
-          update: (ctx, auth, previousProducts) => Products(auth.token,
-              previousProducts == null ? [] : previousProducts.items),
+          create: (ctx) => Products(null, null, []),
+          update: (ctx, auth, previousProducts) => Products(
+            auth.token,
+            auth.userId,
+            previousProducts == null ? [] : previousProducts.items,
+          ),
           // This Products provider will be rebuilt when Auth changes
         ),
         ChangeNotifierProxyProvider<Auth, Cart>(
