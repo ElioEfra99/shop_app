@@ -24,16 +24,16 @@ class Products with ChangeNotifier {
     return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
     try {
+      final filterString =
+          filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
       var url =
-          'https://flutter-shop-app-65772.firebaseio.com/products.json?auth=$authToken';
+          'https://flutter-shop-app-65772.firebaseio.com/products.json?auth=$authToken&$filterString';
       final List<Product> loadedData = [];
 
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-
-      print(extractedData);
 
       if (extractedData == null) {
         return;
@@ -44,8 +44,6 @@ class Products with ChangeNotifier {
 
       final favoriteResponse = await http.get(url);
       final favoriteData = json.decode(favoriteResponse.body);
-
-      print(favoriteData);
 
       extractedData.forEach((prodId, prodValue) {
         loadedData.add(
@@ -89,6 +87,7 @@ class Products with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
+            'creatorId': userId,
           },
         ),
       );
