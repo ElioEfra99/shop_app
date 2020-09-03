@@ -39,9 +39,9 @@ class MyApp extends StatelessWidget {
               Cart(auth.token, previousCart == null ? {} : previousCart.items),
         ),
         ChangeNotifierProxyProvider<Auth, Orders>(
-          create: (ctx) => Orders(null, []),
-          update: (ctx, auth, previousOrders) => Orders(
-              auth.token, previousOrders == null ? [] : previousOrders.orders),
+          create: (ctx) => Orders(null, null, []),
+          update: (ctx, auth, previousOrders) => Orders(auth.token, auth.userId,
+              previousOrders == null ? [] : previousOrders.orders),
         ),
         // MaterialApp and all its children are interested in listening data changes
       ],
@@ -54,8 +54,9 @@ class MyApp extends StatelessWidget {
             accentColor: Colors.limeAccent,
             fontFamily: 'Lato',
           ),
-          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          initialRoute: '/',
           routes: {
+            '/': (ctx) => auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
             ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
             CartScreen.routeName: (ctx) => CartScreen(),

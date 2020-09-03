@@ -159,9 +159,6 @@ class _AuthCardState extends State<AuthCard> {
       }
 
       _showErrorDialog(errorMessage);
-
-      Navigator.of(context)
-          .pushReplacementNamed(ProductsOverviewScreen.routeName);
     } catch (error) {
       // Catches generic errors
       const errorMessage =
