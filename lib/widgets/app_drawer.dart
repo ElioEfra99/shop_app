@@ -54,6 +54,8 @@ class _AppDrawerState extends State<AppDrawer> {
             title: Text('Log out'),
             onTap: () {
               Navigator.of(context).pop();
+              Navigator.of(context)
+                  .pushReplacementNamed('/'); // Avoid any strange behavior
               Provider.of<Auth>(context, listen: false).logout();
             },
           ),

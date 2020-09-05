@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app/screens/auth_screen.dart';
-import 'package:shop_app/screens/orders_screen.dart';
 
+import './screens/auth_screen.dart';
+import './screens/orders_screen.dart';
+import './screens/splash_screen.dart';
 import './screens/user_product_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/product_detail_screen.dart';
@@ -16,6 +17,16 @@ import './providers/orders.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  Widget _autoLogin(Auth auth) {
+    return FutureBuilder(
+      future: auth.tryAutoLogin(),
+      builder: (ctx, authResultSnapshot) =>
+          authResultSnapshot.connectionState == ConnectionState.waiting
+              ? SplashScreen()
+              : AuthScreen(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -56,7 +67,8 @@ class MyApp extends StatelessWidget {
           ),
           initialRoute: '/',
           routes: {
-            '/': (ctx) => auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+            '/': (ctx) =>
+                auth.isAuth ? ProductsOverviewScreen() : _autoLogin(auth),
             ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
             CartScreen.routeName: (ctx) => CartScreen(),
