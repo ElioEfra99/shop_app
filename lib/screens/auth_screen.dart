@@ -98,9 +98,9 @@ class AuthCard extends StatefulWidget {
 class _AuthCardState extends State<AuthCard>
     with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
-  AuthMode _authMode = AuthMode.Login;
-  var _isLoading = false;
   final _passwordController = TextEditingController();
+  var _isLoading = false;
+  AuthMode _authMode = AuthMode.Login;
   Animation<Size> _heightAnimation;
   AnimationController _controller;
   Map<String, String> _authData = {
@@ -130,8 +130,6 @@ class _AuthCardState extends State<AuthCard>
         curve: Curves.fastOutSlowIn,
       ),
     );
-
-    _heightAnimation.addListener(() => setState(() {}));
   }
 
   @override
@@ -229,12 +227,19 @@ class _AuthCardState extends State<AuthCard>
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child: Container(
-        // height: _authMode == AuthMode.Signup ? 320 : 260,
-        height: _heightAnimation.value.height,
-        constraints: BoxConstraints(minHeight: _heightAnimation.value.height),
-        width: deviceSize.width * 0.75,
-        padding: EdgeInsets.all(16.0),
+      child: AnimatedBuilder(
+        animation: _heightAnimation,
+        builder: (ctx, ch) {
+          return Container(
+            height: _heightAnimation.value.height,
+            constraints:
+                BoxConstraints(minHeight: _heightAnimation.value.height),
+            width: deviceSize.width * 0.75,
+            padding: EdgeInsets.all(16.0),
+            child: ch,
+          );
+        },
+        // Animated Builder's child doesn't re-render (more performance)
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
