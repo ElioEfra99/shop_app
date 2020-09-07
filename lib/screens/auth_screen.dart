@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/products_overview_screen.dart';
 import '../models/http_exception.dart';
 import '../providers/auth.dart';
 
@@ -64,7 +63,8 @@ class AuthScreen extends StatelessWidget {
                       child: Text(
                         'MyShop',
                         style: TextStyle(
-                          color: Theme.of(context).accentTextTheme.title.color,
+                          color:
+                              Theme.of(context).accentTextTheme.headline6.color,
                           fontSize: 50,
                           fontFamily: 'Anton',
                           fontWeight: FontWeight.normal,
@@ -227,19 +227,14 @@ class _AuthCardState extends State<AuthCard>
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child: AnimatedBuilder(
-        animation: _heightAnimation,
-        builder: (ctx, ch) {
-          return Container(
-            height: _heightAnimation.value.height,
-            constraints:
-                BoxConstraints(minHeight: _heightAnimation.value.height),
-            width: deviceSize.width * 0.75,
-            padding: EdgeInsets.all(16.0),
-            child: ch,
-          );
-        },
-        // Animated Builder's child doesn't re-render (more performance)
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.decelerate,
+        height: _authMode == AuthMode.Signup ? 320 : 260,
+        constraints:
+            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+        width: deviceSize.width * 0.75,
+        padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
