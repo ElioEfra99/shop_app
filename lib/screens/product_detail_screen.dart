@@ -9,7 +9,6 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
     final productId = ModalRoute.of(context).settings.arguments as String;
     final loadedProduct =
         Provider.of<Products>(context, listen: false).findById(productId);
@@ -25,9 +24,12 @@ class ProductDetailScreen extends StatelessWidget {
               Container(
                 height: constraints.maxHeight * 0.5,
                 width: double.infinity,
-                child: Image.network(
-                  loadedProduct.imageUrl,
-                  fit: BoxFit.cover,
+                child: Hero(
+                  tag: loadedProduct.id,
+                  child: Image.network(
+                    loadedProduct.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               SizedBox(height: constraints.maxHeight * 0.02),
