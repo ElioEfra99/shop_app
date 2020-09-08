@@ -14,33 +14,39 @@ class ProductDetailScreen extends StatelessWidget {
         Provider.of<Products>(context, listen: false).findById(productId);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(loadedProduct.title),
-      ),
-      body: LayoutBuilder(
-        builder: (ctx, constraints) {
-          return Column(
-            children: <Widget>[
-              Container(
-                height: constraints.maxHeight * 0.5,
-                width: double.infinity,
-                child: Hero(
-                  tag: loadedProduct.id,
-                  child: Image.network(
-                    loadedProduct.imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                loadedProduct.title,
+                style: TextStyle(
+                  color: Colors.white,
                 ),
               ),
-              SizedBox(height: constraints.maxHeight * 0.02),
+              background: Hero(
+                tag: loadedProduct.id,
+                child: Image.network(
+                  loadedProduct.imageUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              SizedBox(height: 10),
               Text(
                 '\$${loadedProduct.price}',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 20,
                 ),
+                textAlign: TextAlign.center,
               ),
-              SizedBox(height: constraints.maxHeight * 0.02),
+              SizedBox(height: 10),
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 10),
@@ -49,10 +55,13 @@ class ProductDetailScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                   softWrap: true,
                 ),
+              ),
+              SizedBox(
+                height: 800,
               )
-            ],
-          );
-        },
+            ]),
+          )
+        ],
       ),
     );
   }
