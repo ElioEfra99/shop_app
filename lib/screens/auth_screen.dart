@@ -276,7 +276,7 @@ class _AuthCardState extends State<AuthCard>
                     minHeight: _authMode == AuthMode.Signup ? 60 : 0,
                     maxHeight: _authMode == AuthMode.Signup ? 120 : 0,
                   ),
-                  duration: Duration(microseconds: 300),
+                  duration: Duration(milliseconds: 300),
                   child: FadeTransition(
                     opacity: _opacityAnimation,
                     child: SlideTransition(

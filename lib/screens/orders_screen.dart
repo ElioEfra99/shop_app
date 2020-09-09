@@ -37,8 +37,9 @@ class OrdersScreen extends StatelessWidget {
                 ),
               );
             } else if (dataSnapshot.error != null) {
-              // ...
-              // Do error handling stuff
+              return Center(
+                child: Text('An error occurred!!'),
+              );
             } else {
               return Consumer<Orders>(
                 builder: (ctx, orderData, _) => ListView.builder(
