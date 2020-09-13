@@ -4,15 +4,9 @@ import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../screens/user_product_screen.dart';
 import '../screens/orders_screen.dart';
+import '../helpers/custom_route.dart';
 
-class AppDrawer extends StatefulWidget {
-  AppDrawer({Key key}) : super(key: key);
-
-  @override
-  _AppDrawerState createState() => _AppDrawerState();
-}
-
-class _AppDrawerState extends State<AppDrawer> {
+class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -37,6 +31,10 @@ class _AppDrawerState extends State<AppDrawer> {
             onTap: () {
               Navigator.of(context)
                   .pushReplacementNamed(OrdersScreen.routeName);
+              // Navigator.of(context).pushReplacement(
+              //   CustomRoute(builder: (ctx) => OrdersScreen()),
+              // );
+              // Use custom animation in a per route level
             },
           ),
           Divider(),
